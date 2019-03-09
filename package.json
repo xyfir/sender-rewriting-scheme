@@ -1,0 +1,47 @@
+{
+  "name": "sender-rewriting-scheme",
+  "version": "1.0.0-alpha.0",
+  "description": "Parse and generate SRS (Sender Rewriting Scheme) email addresses.",
+  "main": "dist/srs.js",
+  "scripts": {
+    "watch-coverage": "npm run coverage -- --watch",
+    "watch-build": "npm run build -- -w",
+    "watch-test": "npm run test -- --watch",
+    "coverage": "npm run test -- --coverage",
+    "build": "tsc -p ./",
+    "test": "jest"
+  },
+  "prettier": {
+    "singleQuote": true
+  },
+  "keywords": [
+    "sender rewriting scheme",
+    "sender rewrite scheme",
+    "forwarding",
+    "rewriting",
+    "rewrite",
+    "libsrs2",
+    "scheme",
+    "libsrs",
+    "sender",
+    "email",
+    "srs",
+    "spf"
+  ],
+  "author": "Xyfir, LLC <contact@xyfir.com> (https://www.xyfir.com)",
+  "license": "GPL-3.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Xyfir/sender-rewriting-scheme.git"
+  },
+  "homepage": "https://github.com/Xyfir/sender-rewriting-scheme/srs.js",
+  "bugs": {
+    "url": "https://github.com/Xyfir/sender-rewriting-scheme/issues"
+  },
+  "devDependencies": {
+    "@types/jest": "^24.0.11",
+    "@types/node": "^11.11.0",
+    "jest": "^24.3.1",
+    "typescript": "^3.3.3333"
+  }
+}
