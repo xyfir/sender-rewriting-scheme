@@ -1,18 +1,18 @@
 import { SRS } from './srs';
 
-global.Date.now = () => 1398772288249;
+global.Date.now = () => 1552167447461;
 
 test('rewrite non-SRS', () => {
   const srs = new SRS({ secret: 'test1' });
-  expect(srs.rewrite('me', 'samcday.com.au')).toBe(
-    'SRS0=b4b4=Z5=samcday.com.au=me'
+  expect(srs.rewrite('user', 'example.com')).toBe(
+    'SRS0=5884=RN=example.com=user'
   );
 });
 
 test('rewrite SRS0 with guarded scheme', () => {
   const srs = new SRS({ secret: 'test1' });
-  expect(srs.rewrite('SRS0=5840=Z5=samcday.com.au=me', 'forwarder.com')).toBe(
-    'SRS1=b415=forwarder.com==5840=Z5=samcday.com.au=me'
+  expect(srs.rewrite('SRS0=5840=RN=example.com=user', 'forward.com')).toBe(
+    'SRS1=33b6=forward.com==5840=RN=example.com=user'
   );
 });
 
@@ -20,36 +20,36 @@ test('rewrite SRS1 with guarded scheme without change', () => {
   const srs = new SRS({ secret: 'test1' });
   expect(
     srs.rewrite(
-      'SRS1=b415=forwarder.com==5840=Z5=samcday.com.au=me',
-      'forwarder.com'
+      'SRS1=33b6=forward.com==5840=RN=example.com=user',
+      'forward.com'
     )
-  ).toBe('SRS1=b415=forwarder.com==5840=Z5=samcday.com.au=me');
+  ).toBe('SRS1=33b6=forward.com==5840=RN=example.com=user');
 });
 
 test('rewrite SRS1 with guarded scheme with correct hash', () => {
   const srs = new SRS({ secret: 'test2' });
   expect(
     srs.rewrite(
-      'SRS1=b415=forwarder.com==5840=Z5=samcday.com.au=me',
-      'forwarder.com'
+      'SRS1=33b6=forward.com==5840=RN=example.com=user',
+      'forward.com'
     )
-  ).toBe('SRS1=a22d=forwarder.com==5840=Z5=samcday.com.au=me');
+  ).toBe('SRS1=14ab=forward.com==5840=RN=example.com=user');
 });
 
 test('reverse SRS0', () => {
   const srs = new SRS({ secret: 'test1' });
-  const reversed = srs.reverse('SRS0=b4b4=Z5=samcday.com.au=me');
-  expect(reversed[0]).toBe('me');
-  expect(reversed[1]).toBe('samcday.com.au');
+  const reversed = srs.reverse('SRS0=5884=RN=example.com=user');
+  expect(reversed[0]).toBe('user');
+  expect(reversed[1]).toBe('example.com');
 });
 
 test('reverse SRS1', () => {
   const srs = new SRS({ secret: 'test1' });
   const reversed = srs.reverse(
-    'SRS1=b415=forwarder.com==5840=Z5=samcday.com.au=me'
+    'SRS1=33b6=forward.com==5840=RN=example.com=user'
   );
-  expect(reversed[0]).toBe('SRS0=5840=Z5=samcday.com.au=me');
-  expect(reversed[1]).toBe('forwarder.com');
+  expect(reversed[0]).toBe('SRS0=5840=RN=example.com=user');
+  expect(reversed[1]).toBe('forward.com');
 });
 
 test('reverse non-SRS', () => {
@@ -64,7 +64,7 @@ test('reverse invalid local', () => {
 
 test('reverse invalid hash', () => {
   const srs = new SRS({ secret: 'test2' });
-  expect(() => srs.reverse('SRS0=5840=Z5=samcday.com.au=me')).toThrow(
+  expect(() => srs.reverse('SRS0=5840=RN=example.com=user')).toThrow(
     /Bad signature/
   );
 });
@@ -72,6 +72,6 @@ test('reverse invalid hash', () => {
 test('reverse SRS1 with invalid signature', () => {
   const srs = new SRS({ secret: 'test1' });
   expect(() =>
-    srs.reverse('SRS1=666f=forwarder.com==5840=Z5=samcday.com.au=me')
+    srs.reverse('SRS1=666f=forward.com==5840=RN=example.com=user')
   ).toThrow(/Bad signature/);
 });
