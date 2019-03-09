@@ -106,7 +106,7 @@ export class SRS {
     );
   }
 
-  reverse(address: string): string[] {
+  reverse(address: string): string {
     if (address.startsWith('SRS0')) {
       const match = SRS0_REGEX.exec(address);
       if (!match) throw new Error('Invalid SRS0');
@@ -117,7 +117,7 @@ export class SRS {
         throw new TypeError('Bad signature');
       this.validateTimestamp(timestamp);
 
-      return [local, domain];
+      return `${local}@${domain}`;
     } else if (address.startsWith('SRS1')) {
       const match = SRS1_REGEX.exec(address);
       if (!match) throw new Error('Invalid SRS1');
@@ -127,7 +127,7 @@ export class SRS {
       if (this.hash(domain, local) != hash)
         throw new TypeError('Bad signature');
 
-      return ['SRS0' + local, domain];
+      return `SRS0${local}@${domain}`;
     }
 
     return null;
