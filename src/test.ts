@@ -2,38 +2,38 @@ import { SRS } from './srs';
 
 global.Date.now = () => 1552167447461;
 
-test('rewrite non-SRS', () => {
+test('forward non-SRS', () => {
   const srs = new SRS({ secret: 'test1' });
-  expect(srs.rewrite('user', 'example.com')).toBe(
-    'SRS0=5884=RN=example.com=user'
+  expect(srs.forward('user@example.com', 'forward.com')).toBe(
+    'SRS0=5884=RN=example.com=user@forward.com'
   );
 });
 
-test('rewrite SRS0 with guarded scheme', () => {
-  const srs = new SRS({ secret: 'test1' });
-  expect(srs.rewrite('SRS0=5840=RN=example.com=user', 'forward.com')).toBe(
-    'SRS1=33b6=forward.com==5840=RN=example.com=user'
-  );
-});
-
-test('rewrite SRS1 with guarded scheme without change', () => {
+test('forward SRS0 with guarded scheme', () => {
   const srs = new SRS({ secret: 'test1' });
   expect(
-    srs.rewrite(
-      'SRS1=33b6=forward.com==5840=RN=example.com=user',
-      'forward.com'
-    )
-  ).toBe('SRS1=33b6=forward.com==5840=RN=example.com=user');
+    srs.forward('SRS0=5840=RN=example.com=user@forward.com', 'forward.com')
+  ).toBe('SRS1=33b6=forward.com==5840=RN=example.com=user@forward.com');
 });
 
-test('rewrite SRS1 with guarded scheme with correct hash', () => {
+test('forward SRS1 with guarded scheme without change', () => {
+  const srs = new SRS({ secret: 'test1' });
+  expect(
+    srs.forward(
+      'SRS1=33b6=forward.com==5840=RN=example.com=user@forward.com',
+      'forward.com'
+    )
+  ).toBe('SRS1=33b6=forward.com==5840=RN=example.com=user@forward.com');
+});
+
+test('forward SRS1 with guarded scheme with correct hash', () => {
   const srs = new SRS({ secret: 'test2' });
   expect(
-    srs.rewrite(
-      'SRS1=33b6=forward.com==5840=RN=example.com=user',
+    srs.forward(
+      'SRS1=33b6=forward.com==5840=RN=example.com=user@forward.com',
       'forward.com'
     )
-  ).toBe('SRS1=14ab=forward.com==5840=RN=example.com=user');
+  ).toBe('SRS1=14ab=forward.com==5840=RN=example.com=user@forward.com');
 });
 
 test('reverse SRS0', () => {

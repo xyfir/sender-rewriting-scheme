@@ -63,47 +63,33 @@ export class SRS {
       .substr(0, 4);
   }
 
-  rewrite(local: string, domain: string): string {
-    if (local.startsWith('SRS0')) {
-      // Create a guarded address.
-      const guarded = local.substring(4);
-      return (
-        'SRS1' +
-        this.opt.separator +
-        this.hash(domain, guarded) +
-        this.opt.separator +
-        domain +
-        this.opt.separator +
-        guarded
-      );
-    } else if (local.startsWith('SRS1')) {
-      const match = SRS1_REGEX.exec(local);
-      if (!match) throw new Error('Invalid SRS1 address');
+  forward(address: string, forwarder: string): string {
+    const _address = address.split('@');
+    const domain = _address.pop();
+    const local = _address.join('@');
+    const { separator: sep } = this.opt;
 
-      return (
-        'SRS1' +
-        this.opt.separator +
-        this.hash(match[2], match[3]) +
-        '=' +
-        match[2] +
-        '=' +
-        match[3]
-      );
+    let srs = '';
+    if (local.startsWith('SRS0')) {
+      const guarded = local.substring(4);
+      srs = `SRS1${sep}${this.hash(
+        domain,
+        guarded
+      )}${sep}${domain}${sep}${guarded}`;
+    } else if (local.startsWith('SRS1')) {
+      const m = SRS1_REGEX.exec(local);
+      if (!m) throw new Error('Invalid SRS1 address');
+      srs = `SRS1${sep}${this.hash(m[2], m[3])}=${m[2]}=${m[3]}`;
+    } else {
+      const timestamp = SRS.timestamp();
+      srs = `SRS0${sep}${this.hash(
+        timestamp,
+        domain,
+        local
+      )}=${timestamp}=${domain}=${local}`;
     }
 
-    const timestamp = SRS.timestamp();
-
-    return (
-      'SRS0' +
-      this.opt.separator +
-      this.hash(timestamp, domain, local) +
-      '=' +
-      timestamp +
-      '=' +
-      domain +
-      '=' +
-      local
-    );
+    return `${srs}@${forwarder}`;
   }
 
   reverse(address: string): string {
