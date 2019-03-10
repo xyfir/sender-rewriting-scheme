@@ -38,36 +38,38 @@ test('forward SRS1 with guarded scheme with correct hash', () => {
 
 test('reverse SRS0', () => {
   const srs = new SRS({ secret: 'test1' });
-  expect(srs.reverse('SRS0=5884=RN=example.com=user')).toBe('user@example.com');
+  expect(srs.reverse('SRS0=5884=RN=example.com=user@forward.com')).toBe(
+    'user@example.com'
+  );
 });
 
 test('reverse SRS1', () => {
   const srs = new SRS({ secret: 'test1' });
-  expect(srs.reverse('SRS1=33b6=forward.com==5840=RN=example.com=user')).toBe(
-    'SRS0=5840=RN=example.com=user@forward.com'
-  );
+  expect(
+    srs.reverse('SRS1=33b6=forward.com==5840=RN=example.com=user@forward.com')
+  ).toBe('SRS0=5840=RN=example.com=user@forward.com');
 });
 
 test('reverse non-SRS', () => {
   const srs = new SRS({ secret: 'test1' });
-  expect(srs.reverse('foo')).toBe(null);
+  expect(srs.reverse('user@example.com')).toBe(null);
 });
 
 test('reverse invalid local', () => {
   const srs = new SRS({ secret: 'test1' });
-  expect(() => srs.reverse('SRS0=invalid')).toThrow(/Invalid SRS/);
+  expect(() => srs.reverse('SRS0=invalid@invalid')).toThrow(/Invalid SRS/);
 });
 
 test('reverse SRS0 invalid hash', () => {
   const srs = new SRS({ secret: 'test2' });
-  expect(() => srs.reverse('SRS0=5840=RN=example.com=user')).toThrow(
-    /Bad signature/
-  );
+  expect(() =>
+    srs.reverse('SRS0=5840=RN=example.com=user@forward.com')
+  ).toThrow(/Bad signature/);
 });
 
 test('reverse SRS1 invalid hash', () => {
   const srs = new SRS({ secret: 'test1' });
   expect(() =>
-    srs.reverse('SRS1=666f=forward.com==5840=RN=example.com=user')
+    srs.reverse('SRS1=666f=forward.com==5840=RN=example.com=user@forward.com')
   ).toThrow(/Bad signature/);
 });

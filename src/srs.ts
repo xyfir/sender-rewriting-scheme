@@ -93,6 +93,11 @@ export class SRS {
   }
 
   reverse(address: string): string {
+    address = address
+      .split('@')
+      .slice(0, -1)
+      .join('@');
+
     if (address.startsWith('SRS0')) {
       const match = SRS0_REGEX.exec(address);
       if (!match) throw new Error('Invalid SRS0');
